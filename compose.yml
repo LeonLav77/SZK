@@ -1,0 +1,45 @@
+services:
+  app:
+    image: registry.leon-home-lab.ddns.net/szk:latest
+    pull_policy: always
+    container_name: szk
+    restart: unless-stopped
+    environment:
+      APP_NAME: "Studentska Zlatna Karta"
+      APP_ENV: production
+      APP_KEY: "base64:+xaGIUtBl9ZpKQ09hCvjBqJCPbRu/cIQogmo7kmhWRA="
+      APP_DEBUG: "false"
+      APP_URL: https://szk.leon-home-lab.ddns.net
+      APP_LOCALE: hr
+      APP_FALLBACK_LOCALE: en
+      # Empty: Traefik does HTTPS, the container serves plain HTTP on port 80.
+      DOMAIN: ""
+      DB_CONNECTION: sqlite
+      DB_DATABASE: /app/data/database.sqlite
+      SESSION_DRIVER: database
+      CACHE_STORE: database
+      QUEUE_CONNECTION: sync
+      LOG_CHANNEL: stderr
+    volumes:
+      # The database and uploads MUST live on volumes, or every pull/recreate wipes them.
+      - szk_data:/app/data
+      - szk_uploads:/app/storage/app/public
+    # No ports: Traefik reaches the container over traefik_proxy.
+    networks:
+      - traefik_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.szk.rule=Host(`szk.leon-home-lab.ddns.net`)"
+      - "traefik.http.routers.szk.entrypoints=https"
+      - "traefik.http.routers.szk.tls=true"
+      - "traefik.http.routers.szk.tls.certresolver=letsencrypt"
+      - "traefik.http.services.szk.loadbalancer.server.port=80"
+      - "traefik.docker.network=traefik_proxy"
+
+volumes:
+  szk_data:
+  szk_uploads:
+
+networks:
+  traefik_proxy:
+    external: true

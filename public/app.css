@@ -1,0 +1,145 @@
+/* Public site. Follows zlatna-karta-handoff.md; additions for real data are at the bottom. */
+:root{
+  --blue:#0F009C;--yellow:#EDE62E;--white:#fff;
+  --font-display:'Anton',Impact,'Arial Narrow',sans-serif;
+  --font-body:'Outfit',system-ui,-apple-system,'Segoe UI',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+html{background:var(--blue);scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
+html.yellow{background:var(--yellow)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--white);font-family:var(--font-body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+html.yellow body{color:var(--blue)}
+a{color:inherit}
+h1,h2{margin:0;font-family:var(--font-display);font-weight:400;text-transform:uppercase;letter-spacing:.01em;line-height:.95}
+p{margin:0}
+:focus-visible{outline:3px solid currentColor;outline-offset:3px}
+h1:focus{outline:none}
+
+/* ---------- Header ---------- */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--yellow);color:var(--blue)}
+html.yellow .bar{background:var(--blue);color:var(--yellow)}
+.bar-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:10px 16px}
+.brand{display:none;font-family:var(--font-display);text-transform:uppercase;font-size:1.25rem;text-decoration:none;letter-spacing:.02em}
+.bar nav{display:flex;gap:clamp(14px,3vw,28px);margin-left:auto}
+.bar nav a{font-weight:700;font-size:12px;line-height:1.15;text-decoration:none;padding:6px 2px;border-bottom:2px solid transparent;min-height:44px;display:flex;flex-direction:column;justify-content:center}
+.bar nav a span{display:block}
+.bar nav a[aria-current="page"]{border-bottom-color:currentColor}
+.bar nav a:hover{border-bottom-color:currentColor}
+@media (min-width:720px){
+  .brand{display:block}
+  .bar nav a{font-size:15px;flex-direction:row;align-items:center}
+  .bar nav a span{display:inline}
+  .bar nav a span+span{margin-left:.3em}
+}
+
+/* ---------- Layout ---------- */
+.page{max-width:1040px;margin:0 auto;padding:clamp(28px,6vw,64px) 16px clamp(40px,8vw,88px)}
+.back{display:inline-flex;align-items:center;gap:6px;margin-bottom:22px;font-weight:600;text-decoration:none;color:var(--yellow)}
+.back:hover{text-decoration:underline}
+.back svg{width:16px;height:16px}
+.page-h{font-size:clamp(2.6rem,8vw,4.6rem);color:var(--white)}
+.lead{margin-top:10px;max-width:46ch;opacity:.92}
+
+/* ---------- Home ---------- */
+.home{min-height:calc(100vh - 72px - env(safe-area-inset-top,0px));display:flex;flex-direction:column;justify-content:space-between;gap:48px}
+.home{position:relative;isolation:isolate}
+.home::before{content:"";position:absolute;z-index:-1;left:-16px;right:-16px;bottom:120px;height:200px;background:radial-gradient(var(--yellow) 34%,transparent 37%) 0 0/12px 12px;-webkit-mask-image:linear-gradient(0deg,#000,transparent);mask-image:linear-gradient(0deg,#000,transparent);opacity:.9;pointer-events:none}
+.hero{margin:auto 0;text-align:center}
+.hero h1{font-size:clamp(3.4rem,12vw,7rem)}
+.hero-copy{margin:22px auto 0;max-width:52ch;text-align:left;display:grid;gap:14px;font-weight:500}
+.contact{position:relative;z-index:1;align-self:center;width:100%;max-width:420px;text-align:center;background:var(--blue);border:3px solid var(--yellow);border-radius:24px;padding:18px 20px}
+.contact h2{font-size:1.7rem;letter-spacing:.02em}
+.contact p{margin-top:6px;font-weight:500}
+.contact a{text-underline-offset:3px}
+
+/* ---------- Tiskana izdanja ---------- */
+.covers{display:flex;flex-direction:column;gap:28px;margin-top:32px}
+.cover{display:flex;flex-direction:column;gap:10px;width:min(58%,260px);text-decoration:none}
+.cover:nth-child(odd){align-self:flex-start}
+.cover:nth-child(even){align-self:flex-end}
+.cover-art{aspect-ratio:3/4;display:grid;place-items:center;text-align:center;padding:16px;border-radius:6px;background:rgba(255,255,255,.1);border:2px dashed rgba(237,230,46,.6);font-weight:600;transition:border-color .15s,background .15s}
+.cover-art img{width:100%;height:100%;object-fit:cover;border-radius:4px}
+.cover:hover .cover-art{border-style:solid;border-color:var(--yellow);background:rgba(255,255,255,.16)}
+.cover-cap{font-weight:700}
+@media (min-width:720px){
+  .covers{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;align-items:start}
+  .cover{width:100%;max-width:280px}
+  .cover:nth-child(odd),.cover:nth-child(even){align-self:auto}
+  .cover:nth-child(3n+2){margin-top:72px}
+  .cover:nth-child(3n){margin-top:24px}
+}
+
+/* ---------- PDF viewer ---------- */
+.pdf{margin-top:24px;max-width:760px;aspect-ratio:210/297;display:grid;place-items:center;text-align:center;border-radius:8px;background:rgba(255,255,255,.08);border:2px dashed rgba(237,230,46,.6);overflow:hidden}
+.pdf iframe{width:100%;height:100%;border:0;background:#fff}
+.pdf-actions{margin-top:16px;display:flex;gap:12px;flex-wrap:wrap}
+
+/* ---------- Kuponi ---------- */
+.coupons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:30px}
+@media (min-width:720px){.coupons{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}}
+.tile{display:flex;flex-direction:column;gap:16px;min-height:176px;padding:16px;border-radius:16px;background:var(--white);color:var(--blue);text-decoration:none;transition:background .15s;clip-path:polygon(0 0,100% 0,100% calc(100% - 22px),calc(100% - 22px) 100%,0 100%)}
+.tile:focus-visible{outline:3px solid var(--blue);outline-offset:-6px}
+.tile:hover{background:var(--yellow)}
+.tile-top{display:flex;align-items:center;gap:8px;min-width:0}
+.logo{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(15,0,156,.12);font-size:10px;font-weight:700}
+.tile-off{font-family:var(--font-display);text-transform:uppercase;font-size:clamp(2.4rem,7vw,3.6rem);font-weight:400;letter-spacing:.01em;line-height:.95}
+.tile-name{min-width:0;font-weight:700;font-size:.95rem;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ---------- Kupon detalj ---------- */
+.visual{aspect-ratio:16/9;display:grid;place-items:center;border-radius:12px;background:rgba(255,255,255,.1);border:2px dashed rgba(237,230,46,.6);font-weight:600;margin-bottom:22px}
+.detail h1{font-size:clamp(2.6rem,8vw,4.4rem)}
+.detail-off{display:inline-block;margin-top:14px;padding:4px 14px;border-radius:999px;background:var(--yellow);color:var(--blue);font-family:var(--font-display);font-weight:400;font-size:1.6rem;letter-spacing:.02em;line-height:1.3}
+.facts{margin:22px 0 0;display:grid;gap:12px;max-width:52ch}
+.facts div{display:grid;grid-template-columns:110px 1fr;gap:12px}
+.facts dt{font-weight:700;color:var(--yellow)}
+.facts dd{margin:0;font-weight:500}
+.pill{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:999px;background:var(--yellow);color:var(--blue);font:inherit;font-family:var(--font-display);font-weight:400;text-transform:uppercase;font-size:1.7rem;padding:12px 34px;cursor:pointer;text-decoration:none;letter-spacing:.03em;transition:transform .12s}
+.pill:hover{transform:translateY(-2px)}
+.pill:active{transform:translateY(1px)}
+.pill.outline{background:transparent;color:var(--yellow);border:3px solid var(--yellow);font-size:1.1rem;padding:10px 24px}
+.detail-cta{margin-top:clamp(40px,10vw,96px)}
+
+/* ---------- Iskoristi kupon ---------- */
+.redeem{min-height:calc(100vh - 72px - env(safe-area-inset-top,0px));display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:28px;text-align:center}
+.redeem h1{font-size:clamp(3rem,11vw,5.5rem);max-width:10ch}
+.redeem .sub{margin-top:10px;font-weight:600;font-size:1.15rem}
+.redeem .who{margin-top:8px;font-weight:800;font-size:1.5rem}
+.pie{width:min(56vw,230px);aspect-ratio:1;border-radius:50%;margin:8px auto 0;background:conic-gradient(from calc(var(--e,0) * 1deg),var(--blue) calc((360 - var(--e,0)) * 1deg),transparent 0);box-shadow:0 0 0 3px rgba(15,0,156,.18)}
+.timer-l{margin-top:16px;font-weight:600}
+.timer{font-family:var(--font-display);font-weight:400;font-size:4rem;letter-spacing:.01em;font-variant-numeric:tabular-nums;line-height:1}
+.clock{margin-top:6px;font-size:.9rem;font-weight:600;font-variant-numeric:tabular-nums;opacity:.8}
+.note{font-weight:600;max-width:30ch}
+.pill.dark{background:var(--blue);color:var(--yellow);font-size:1.1rem;padding:12px 26px}
+
+/* ---------- Additions for real data ---------- */
+/* Partner logo image inside the circle */
+.logo{overflow:hidden}
+.logo img{width:100%;height:100%;object-fit:cover}
+/* Fallback when the discount text is longer than the ~6 characters the design expects */
+.tile-off.long{font-size:clamp(1.5rem,4.6vw,2.2rem);overflow-wrap:anywhere}
+/* Tile: name up top, discount + what it's for at the bottom, one line each */
+.tile-body{margin-top:auto}
+.tile-what{margin-top:8px;padding-right:12px;font-size:.82rem;font-weight:500;line-height:1.3;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile-what.partner{margin-top:0;font-size:1rem;font-weight:700;opacity:1}
+/* Uploaded visuals are print ads (A6 portrait), shown whole instead of cropped to 16/9 */
+.visual.has-img{aspect-ratio:auto;display:block;border:0;background:none}
+.visual.has-img img{display:block;max-width:100%;max-height:min(75vh,640px);border-radius:12px}
+.facts dd a{text-underline-offset:3px;overflow-wrap:anywhere}
+/* Covers with a real image drop the dashed placeholder frame */
+.cover-art.has-img{padding:0;background:none;border:2px solid transparent}
+.cover-art.has-img img{border-radius:4px}
+.cover:hover .cover-art.has-img{border-color:var(--yellow);background:none}
+/* Category filter: quiet text links, one scrollable line */
+.chips{display:flex;gap:18px;margin-top:14px;overflow-x:auto;scrollbar-width:none;white-space:nowrap}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;min-height:44px;padding:0;border:0;border-bottom:2px solid transparent;background:none;color:inherit;font:inherit;font-weight:600;font-size:.85rem;opacity:.7;cursor:pointer}
+.chip:hover{opacity:1}
+.chip[aria-pressed="true"]{opacity:1;border-bottom-color:var(--yellow)}
+.chip:focus-visible{outline-offset:-3px}
+.empty{margin-top:30px;font-weight:600}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
