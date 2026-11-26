@@ -40,8 +40,6 @@ const NAV = [
     icon('<path d="M4 6h16a1 1 0 0 1 1 1v3a2 2 0 0 0 0 4v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3a2 2 0 0 0 0-4V7a1 1 0 0 1 1-1z"/><path d="M15 6v2M15 11v2M15 16v2"/>')],
   ['karta', '#/karta', 'Karta', 'Karta',
     icon('<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/>')],
-  ['izdanja', '#/izdanja', 'Tiskana izdanja', 'Izdanja',
-    icon('<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20v3H6.5"/>')],
   ['o-projektu', '#/o-projektu', 'O projektu', 'O projektu',
     icon('<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/>')],
 ];
@@ -119,6 +117,7 @@ async function viewAbout() {
     <section class="hero">
       <h1 tabindex="-1">${esc(edition?.about_title || 'O projektu')}</h1>
       ${edition?.about_html ? `<div class="hero-copy">${edition.about_html}</div>` : ''}
+      <a class="pill outline about-issues" href="#/izdanja">Tiskana izdanja →</a>
     </section>
     <section class="contact" aria-labelledby="kontakt-h">
       <h2 id="kontakt-h">kontakt</h2>
@@ -133,6 +132,7 @@ async function viewEditions() {
   const editions = (await get('/print-issues')) || [];
 
   return { title: 'Tiskana izdanja', html: `
+  <a class="back" href="#/o-projektu">${chev}O projektu</a>
   <h1 class="page-h" tabindex="-1">Tiskana izdanja</h1>
   <p class="lead">Odaberi izdanje i listaj ga u PDF-u.</p>
   ${editions.length ? `<div class="covers">
@@ -486,7 +486,8 @@ async function route(first) {
   let view;
   if (!a) view = viewHome();
   else if (a === 'o-projektu' && !b) { section = 'o-projektu'; view = viewAbout(); }
-  else if (a === 'izdanja') { section = 'izdanja'; view = b ? viewEdition(+b) : viewEditions(); }
+  else if (a === 'izdanja') { section = 'o-projektu'; // reached from O projektu, no tab of its own
+    view = b ? viewEdition(+b) : viewEditions(); }
   else if (a === 'karta' && !b) { section = 'karta'; view = viewMap(); }
   else if (a === 'kuponi') {
     section = 'kuponi';

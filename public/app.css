@@ -209,8 +209,8 @@ html.yellow .bar nav a[aria-current="page"]{background:var(--yellow);color:var(-
 :root{--tabbar-h:64px}
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(4,1fr);
   padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));background:var(--blue);border-top:1px solid rgba(237,230,46,.25);box-shadow:0 -6px 24px rgba(0,0,0,.25)}
-.tabbar a{display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 0;color:var(--white);text-decoration:none;font-size:12px;font-weight:600;line-height:1.1;opacity:.75;-webkit-tap-highlight-color:transparent}
-.tab-ic{display:grid;place-items:center;width:56px;height:30px;border-radius:999px;transition:background .2s}
+.tabbar a{display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 0;color:var(--white);text-decoration:none;font-size:clamp(11px,3.2vw,12px);white-space:nowrap;font-weight:600;line-height:1.1;opacity:.75;-webkit-tap-highlight-color:transparent}
+.tab-ic{display:grid;place-items:center;width:min(52px,100%);height:30px;border-radius:999px;transition:background .2s}
 .tab-ic svg{width:22px;height:22px}
 .tabbar a[aria-current="page"]{opacity:1;color:var(--yellow);font-weight:700}
 .tabbar a[aria-current="page"] .tab-ic{background:var(--yellow);color:var(--blue)}
@@ -321,3 +321,6 @@ html,body{overflow-x:clip}
   /* O projektu: exactly one screen between the header and the bar, no scroll */
   .home{min-height:calc(100svh - 58px - var(--tabbar-h) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));margin-bottom:-32px}
 }
+
+/* O projektu: the way to the printed issues (they have no tab of their own) */
+.about-issues{margin-top:clamp(14px,2.5vh,24px)}
