@@ -11,6 +11,7 @@
           action="{{ $coupon->exists ? route('admin.coupons.update', $coupon) : route('admin.editions.coupons.store', $edition) }}">
         @csrf
         @if ($coupon->exists) @method('PUT') @endif
+        <p class="required-note"><b>*</b> obavezno polje</p>
 
         <div class="card">
             <div class="grid-2">
@@ -26,15 +27,19 @@
                     @error('titular_id') <div class="error">{{ $message }}</div> @enderror
                 </div>
 
-                <div class="field">
-                    <label for="category_id">Kategorija</label>
-                    <select id="category_id" name="category_id">
-                        <option value="">— bez kategorije —</option>
+                <fieldset class="field cat-picker">
+                    <legend>Kategorije</legend>
+                    <div class="cat-options">
                         @foreach ($categories as $category)
-                            <option value="{{ $category->id }}" @selected(old('category_id', $coupon->category_id) == $category->id)>{{ $category->name }}</option>
+                            <label class="cat-option">
+                                <input type="checkbox" name="categories[]" value="{{ $category->id }}" @checked(in_array($category->id, $checked))>
+                                <span>{{ $category->name }}</span>
+                            </label>
                         @endforeach
-                    </select>
-                </div>
+                    </div>
+                    <small>Možeš odabrati više. Kupon se prikazuje pod svakom odabranom.</small>
+                    @error('categories') <div class="error">{{ $message }}</div> @enderror
+                </fieldset>
             </div>
 
             <x-field name="title" label="Naslov kupona" :value="$coupon->title" required placeholder="npr. Popust na sve pizze" />
@@ -48,32 +53,18 @@
         </div>
 
         <div class="card">
-            <h2 style="margin-top:0">Dodatno (nije obavezno)</h2>
-            <div class="grid-2">
-                <x-field name="code" label="Promo kod" :value="$coupon->code" maxlength="50" placeholder="npr. 30HNK23ST"
-                         help="Za online kupnju. Prikazuje se velikim slovima kad student iskoristi kupon." />
-                <x-field name="valid_until" label="Vrijedi do" type="date" :value="$coupon->valid_until?->toDateString()"
-                         help="Ostavi prazno = vrijedi dok je izdanje aktivno. Nakon datuma se sam sakrije." />
-            </div>
-            <x-field name="link" label="Link" type="url" :value="$coupon->link" placeholder="https://..."
-                     help="Rezervacija, aplikacija, webshop... (umjesto QR koda iz tiskanog oglasa)." />
+            <h2 style="margin-top:0">Online kupnja</h2>
+            <p class="muted">Samo ako titular prodaje i online. Inače ostavi prazno.</p>
+            <x-field name="code" label="Promo kod" :value="$coupon->code" maxlength="50" placeholder="npr. 30HNK23ST"
+                     help="Za online kupnju. Prikazuje se velikim slovima kad student iskoristi kupon." />        </div>
+
+        <div class="card">
+            <h2 style="margin-top:0">Vizual</h2>
+            <p class="muted">Položeni format 3:2 (npr. 1500×1000). Slika drugog oblika izrezat će se po sredini.</p>
+            <x-upload name="visual" label="Slika oglasa" :current="$coupon->visual_path" preview-class="wide" required />
         </div>
 
         <div class="card">
-            <h2 style="margin-top:0">Vizual (nije obavezno)</h2>
-            <p class="muted">Isti format kao u tiskanoj brošuri: uspravni A6 (npr. 1050×1500). Ako ga staviš, prikazuje se umjesto logotipa i teksta.</p>
-            @if ($coupon->visual_path)
-                <img class="preview" src="{{ Storage::disk('public')->url($coupon->visual_path) }}" alt="">
-                <x-checkbox name="remove_visual" label="Ukloni ovu sliku" />
-            @endif
-            <x-field name="visual" label="Slika oglasa" type="file" accept="image/*" help="Najviše 4 MB." />
-        </div>
-
-        <div class="card">
-            <x-checkbox name="is_published" label="Objavljen" :checked="$coupon->is_published"
-                        help="Makni kvačicu da sakriješ kupon bez brisanja." />
-            <x-checkbox name="requires_login" label="Samo za prijavljene studente" :checked="$coupon->requires_login"
-                        help="Neprijavljeni posjetitelji ovaj kupon uopće ne vide." />
             <x-field name="sort_order" label="Redoslijed" type="number" :value="$coupon->sort_order" style="max-width:160px"
                      help="Manji broj = prikazuje se ranije." />
         </div>

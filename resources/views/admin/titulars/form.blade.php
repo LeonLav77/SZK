@@ -8,21 +8,13 @@
           action="{{ $titular->exists ? route('admin.titulars.update', $titular) : route('admin.titulars.store') }}">
         @csrf
         @if ($titular->exists) @method('PUT') @endif
+        <p class="required-note"><b>*</b> obavezno polje</p>
 
         <div class="card">
             <x-field name="name" label="Naziv" :value="$titular->name" required placeholder="npr. Pizzeria Napoli" />
 
-            @if ($titular->logo_path)
-                <img class="preview logo" src="{{ Storage::disk('public')->url($titular->logo_path) }}" alt="">
-            @endif
-            <x-field name="logo" label="Logotip" type="file" accept="image/*" help="Najbolje kvadratna slika. Najviše 4 MB." />
-
-            <div class="grid-2">
-                <x-field name="website" label="Web stranica" type="url" :value="$titular->website" placeholder="https://..." />
-                <x-field name="instagram" label="Instagram" :value="$titular->instagram" placeholder="@ime" />
-            </div>
-            <x-field name="notes" label="Bilješke (vidiš samo ti)" type="textarea" :value="$titular->notes" rows="3"
-                     help="Kontakt osoba, broj telefona, dogovor..." />
+            <x-upload name="logo" label="Logotip" :current="$titular->logo_path" preview-class="logo"
+                      help="Najbolje kvadratna slika." />
         </div>
 
         <button class="btn primary">Spremi titulara</button>
@@ -77,7 +69,7 @@
                 <small x-text="message || 'Upiši adresu i klikni Pronađi. Ili samo klikni na kartu.'"></small>
                 @error('address') <div class="error">{{ $message }}</div> @enderror
             </div>
-            <x-field name="note" label="Napomena (nije obavezno)" placeholder="npr. pon–sub 10–21 h, tel. 01/482 5071" />
+            <x-field name="note" label="Napomena" placeholder="npr. pon–sub 10–21 h, tel. 01/482 5071" />
             <label style="font-weight:600; display:block; margin-bottom:6px">Mjesto na karti</label>
             <div x-ref="map" class="map"></div>
             <small class="muted">Možeš povući pribadaču da točno označiš mjesto.</small>

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\DB;
 
 #[Fillable(['name', 'about_title', 'about_body', 'pdf_path', 'cover_path'])]
@@ -27,6 +28,11 @@ class Edition extends Model
     public function coupons(): HasMany
     {
         return $this->hasMany(Coupon::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function redemptions(): HasManyThrough
+    {
+        return $this->hasManyThrough(Redemption::class, Coupon::class);
     }
 
     public static function current(): ?self
@@ -55,8 +61,10 @@ class Edition extends Model
 
     public function copyCouponsFrom(Edition $source): void
     {
-        foreach ($source->coupons as $coupon) {
-            $coupon->replicate()->fill(['edition_id' => $this->id])->save();
+        foreach ($source->coupons()->with('categories')->get() as $coupon) {
+            $copy = $coupon->replicate()->fill(['edition_id' => $this->id]);
+            $copy->save();
+            $copy->categories()->sync($coupon->categories->modelKeys());
         }
     }
 }

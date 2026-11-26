@@ -1,4 +1,6 @@
 <x-admin-layout :title="$edition->name">
+    <a class="back" href="{{ route('admin.editions.index') }}">← Sva izdanja</a>
+
     <div class="head">
         <div>
             <h1>{{ $edition->name }} <span class="badge {{ $edition->status }}">{{ $edition->statusLabel() }}</span></h1>
@@ -16,9 +18,13 @@
                     <button class="btn yellow">Aktiviraj izdanje</button>
                 </form>
             @endunless
-            <a class="btn" href="{{ route('admin.editions.edit', $edition) }}">Uredi tekstove i PDF</a>
-            <a class="btn" href="{{ route('admin.editions.export', $edition) }}">Preuzmi statistiku (Excel)</a>
-        </div>
+            <a class="btn" href="{{ route('admin.editions.edit', $edition) }}">Uredi tekstove i PDF</a>        </div>
+    </div>
+
+    <div class="stats">
+        <div class="stat"><b>{{ $edition->coupons->count() }}</b> kupona u izdanju</div>
+        <div class="stat"><b>{{ $redemptionCount }}</b> korištenja ukupno</div>
+        <div class="stat"><b>{{ $weekCount }}</b> korištenja zadnjih 7 dana</div>
     </div>
 
     <div class="head">
@@ -34,9 +40,9 @@
                 <tr>
                     <td>
                         @if ($image)
-                            <img class="thumb" src="{{ Storage::disk('public')->url($image) }}" alt="">
+                            <img class="thumb wide" src="{{ Storage::disk('public')->url($image) }}" alt="">
                         @else
-                            <span class="thumb"></span>
+                            <span class="thumb wide"></span>
                         @endif
                     </td>
                     <td>{{ $coupon->titular->name }}</td>
@@ -44,16 +50,11 @@
                     <td>
                         @if ($coupon->isRedeemable()) {{ $coupon->discount }} @else <span class="badge">Oglas partnera</span> @endif
                     </td>
-                    <td>{{ $coupon->category?->name ?? '—' }}</td>
+                    <td>{{ $coupon->categories->pluck('name')->join(', ') ?: '—' }}</td>
                     <td>
                         @unless ($coupon->is_published) <span class="badge">Skriven</span> @endunless
                         @if ($coupon->requires_login) <span class="badge">Samo prijavljeni</span> @endif
-                        @if ($coupon->isExpired())
-                            <span class="badge draft">Isteklo {{ $coupon->valid_until->format('d.m.') }}</span>
-                        @elseif ($coupon->valid_until)
-                            <small class="muted">do {{ $coupon->valid_until->format('d.m.Y.') }}</small>
-                        @endif
-                        @if ($coupon->is_published && ! $coupon->requires_login && ! $coupon->isExpired()) Svi @endif
+                        @if ($coupon->is_published && ! $coupon->requires_login) Svi @endif
                     </td>
                     <td>{{ $coupon->redemptions_count }}</td>
                     <td><a href="{{ route('admin.coupons.edit', $coupon) }}">Uredi</a></td>

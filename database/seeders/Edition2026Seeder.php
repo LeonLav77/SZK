@@ -149,16 +149,15 @@ class Edition2026Seeder extends Seeder
             'Uz predočenje važeće studentske iskaznice.'],
         [9, "Domino's Pizza", 'Hrana i piće', '-20%', 'Popust na pizze',
             '20% popusta uz kod na narudžbu.',
-            'Ponuda se može iskoristiti samo uz predočenje važeće studentske iskaznice. Ne vrijedi za Promo pizzu i Napravi svoju pizzu. Ne može se kombinirati s drugim ponudama i popustima. Dostava se naplaćuje.',
-            ['code' => '1747', 'valid_until' => '2026-12-31', 'link' => 'https://www.dominos.hr']],
+            'Ponuda se može iskoristiti samo uz predočenje važeće studentske iskaznice. Ne vrijedi za Promo pizzu i Napravi svoju pizzu. Ne može se kombinirati s drugim ponudama i popustima. Dostava se naplaćuje. Vrijedi do 31.12.2026.',
+            ['code' => '1747', 'link' => 'https://www.dominos.hr']],
         [10, 'Bowling Club Zagreb', 'Sport i rekreacija', '44 €', 'Super studentski paket (za 4 osobe)',
             'Paket uključuje 2 h bowlinga, cipele za bowling i 0,3 l soka ili točene svijetle pive po osobi, ponedjeljkom i utorkom cijeli dan. Cijena 44 € (11 € po osobi).',
-            'Svaki korisnik paketa mora predočiti x-icu s osobnom iskaznicom. Jedna osoba ovu pogodnost može koristiti najviše 3 puta.',
-            ['valid_until' => '2026-09-30', 'link' => 'https://www.bowlingclub.hr']],
+            'Svaki korisnik paketa mora predočiti x-icu s osobnom iskaznicom. Jedna osoba ovu pogodnost može koristiti najviše 3 puta. Vrijedi do 30.09.2026.',
+            ['link' => 'https://www.bowlingclub.hr']],
         [11, 'Bowling Club Zagreb', 'Hrana i piće', '-20%', 'Popust na sve pizze',
             '20% popusta na ponudu svih pizza uz x-icu. Na 5 pizza 25%, a na 10 pizza 30% popusta.',
-            'Samo za osobno preuzimanje. Kuhinja radi svaki dan od 10:00 do 22:45, tel. 01 3096 500.',
-            ['valid_until' => '2026-09-30']],
+            'Samo za osobno preuzimanje. Kuhinja radi svaki dan od 10:00 do 22:45, tel. 01 3096 500. Vrijedi do 30.09.2026.'],
         [12, 'Teeamo Bubble tea', 'Hrana i piće', '-20%', 'Popust na sva pića',
             '20% popusta na sva ponuđena pića uz kupon.', null],
         [13, 'Figura Bistro', 'Hrana i piće', '-15%', '15% popusta za studente',
@@ -191,15 +190,15 @@ class Edition2026Seeder extends Seeder
             'Kopiranje, printanje i skeniranje, uvez, plastificiranje, print velikih formata, izrada žigova, vizitki, letaka i postera, tisak na majice, torbe i šalice.', null],
         [26, 'F45 Training Radnička', 'Sport i rekreacija', '-20%', '7 dana besplatno i 20% na prvu članarinu',
             'Prvih 7 dana treniraš besplatno, a na prvu članarinu ti poklanjamo 20% popusta.',
-            'Pokaži ovaj kupon i ostvari pogodnosti.',
-            ['valid_until' => '2026-09-01', 'link' => 'https://www.f45-trening.hr']],
+            'Pokaži ovaj kupon i ostvari pogodnosti. Vrijedi do 01.09.2026.',
+            ['link' => 'https://www.f45-trening.hr']],
         [27, 'Vještina je reći ne', null, null, 'Vještina je reći ne',
             'Provjeri razinu svojih vještina u aplikaciji (Google Play i App Store).', null],
         [28, 'Knjižnice grada Zagreba', 'Obrazovanje', null, 'Otvori aplikaciju eZaKi',
             'Posudi, čitaj i slušaj!', null, ['link' => 'https://www.kgz.hr']],
         [29, 'Martina Hair', 'Usluge i kupovina', '-15%', 'Popust za studente',
             'Profesionalni salon za njegu kose: balayage, botox i keratin.',
-            'Uz predočenje x-ice.', ['valid_until' => '2026-09-01']],
+            'Uz predočenje x-ice. Vrijedi do 01.09.2026.'],
         [30, 'ZET', null, null, 'Godišnja učenička i studentska karta',
             'S nama do znanja! ZET kartu jednostavno preuzmi u aplikaciji Moj ZET.', null,
             ['link' => 'https://www.zet.hr']],
@@ -242,15 +241,14 @@ class Edition2026Seeder extends Seeder
             return $titular;
         });
 
-        $categories = collect(['Hrana i piće', 'Sport i rekreacija', 'Kultura i zabava', 'Usluge i kupovina', 'Obrazovanje'])
-            ->mapWithKeys(fn ($name, $i) => [$name => Category::firstOrCreate(['name' => $name], ['sort_order' => $i * 10])->id]);
+        Category::syncFixed();
+        $categories = Category::pluck('id', 'name');
 
         foreach (self::COUPONS as $row) {
             [$page, $titular, $category, $discount, $title, $description, $conditions, $extra] = $row + [7 => []];
 
-            $edition->coupons()->create([
+            $coupon = $edition->coupons()->create([
                 'titular_id' => $titulars[$titular]->id,
-                'category_id' => $category ? $categories[$category] : null,
                 'discount' => $discount,
                 'title' => $title,
                 'description' => $description,
@@ -259,6 +257,9 @@ class Edition2026Seeder extends Seeder
                 'sort_order' => $page * 10,
                 ...$extra,
             ]);
+
+            // A row's category may be one name or a list of names.
+            $coupon->categories()->sync(collect((array) $category)->map(fn ($name) => $categories[$name]));
         }
     }
 

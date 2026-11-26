@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Titular;
+use App\Support\Uploads;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
@@ -26,7 +27,7 @@ class TitularController extends Controller
 
     public function store(Request $request)
     {
-        $titular = Titular::create($this->validated($request));
+        $titular = Titular::create($this->validated($request, new Titular));
 
         return redirect()->route('admin.titulars.edit', $titular)
             ->with('success', 'Titular je spremljen. Sada mu dodaj lokacije (dolje).');
@@ -39,7 +40,7 @@ class TitularController extends Controller
 
     public function update(Request $request, Titular $titular)
     {
-        $titular->update($this->validated($request));
+        $titular->update($this->validated($request, $titular));
 
         return redirect()->route('admin.titulars.edit', $titular)->with('success', 'Promjene su spremljene.');
     }
@@ -55,19 +56,14 @@ class TitularController extends Controller
         return redirect()->route('admin.titulars.index')->with('success', 'Titular je obrisan.');
     }
 
-    private function validated(Request $request): array
+    private function validated(Request $request, Titular $titular): array
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'logo' => ['nullable', 'image', 'max:4096'],
-            'website' => ['nullable', 'url', 'max:255'],
-            'instagram' => ['nullable', 'string', 'max:255'],
-            'notes' => ['nullable', 'string'],
+            'logo' => ['nullable', 'image', 'max:20480'],
         ]);
 
-        if ($request->hasFile('logo')) {
-            $data['logo_path'] = $request->file('logo')->store('logos', 'public');
-        }
+        $data['logo_path'] = Uploads::sync($request, 'logo', 'logos', $titular->logo_path);
 
         return Arr::except($data, ['logo']);
     }

@@ -17,12 +17,10 @@ class CouponResource extends JsonResource
             'description' => $this->description,
             'conditions' => $this->conditions,
             'code' => $this->code,
-            'link' => $this->link,
-            'valid_until' => $this->valid_until?->toDateString(),
             'redeemable' => $this->isRedeemable(),
             'visual_url' => $this->visual_path ? Storage::disk('public')->url($this->visual_path) : null,
             'requires_login' => $this->requires_login,
-            'category' => new CategoryResource($this->whenLoaded('category')),
+            'categories' => CategoryResource::collection($this->whenLoaded('categories')),
             'titular' => new TitularResource($this->whenLoaded('titular')),
         ];
     }

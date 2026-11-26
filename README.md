@@ -38,7 +38,7 @@ demo data is local only.
 - **Editions:** one is active at a time and students only ever see that one. A new edition can copy all coupons from an older one. Activating it archives the previous one.
 - **Titulari:** companies, entered once and reused across editions. Each can have many locations (address + map pin) for a future map.
 - **Coupons:** belong to one edition and one titular. `discount` is free text (20%, 2 za 1, −5 €...). The 1:1 visual is optional. "Samo za prijavljene" coupons are completely hidden from guests (the API returns 404).
-- **Uses:** every "Iskoristi kupon" is logged in `redemptions`. Stats show on the edition page, with a CSV export.
+- **Uses:** every "Iskoristi kupon" is logged in `redemptions`. Stats show on the edition page.
 - **No email:** if a student forgets their password, the admin sets a new one under Korisnici.
 
 ## API v1

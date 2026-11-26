@@ -12,15 +12,12 @@ class CouponRulesTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_expired_coupons_are_hidden(): void
+    public function test_coupons_with_a_past_date_stay_visible(): void
     {
-        $edition = Edition::factory()->active()->create();
-        $valid = Coupon::factory()->for($edition)->create(['valid_until' => today()]);
-        Coupon::factory()->for($edition)->create(['valid_until' => today()->subDay()]);
+        // Expiry is written into the conditions text; the date column isn't used.
+        Coupon::factory()->for(Edition::factory()->active())->create(['valid_until' => today()->subDay()]);
 
-        $this->getJson('/api/v1/coupons')
-            ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.id', $valid->id);
+        $this->getJson('/api/v1/coupons')->assertJsonCount(1, 'data');
     }
 
     public function test_partner_ads_are_listed_but_cannot_be_redeemed(): void

@@ -16,7 +16,7 @@
 
         <div class="card">
             <h2 style="margin-top:0">Kupon</h2>
-            <x-field name="countdown_seconds" label="Odbrojavanje (sekunde)" type="number" min="10" max="600"
+            <x-field name="countdown_seconds" label="Odbrojavanje (sekunde)" type="number" min="10" max="600" required
                      :value="$settings['countdown_seconds']" style="max-width:160px"
                      help="Koliko dugo kupon stoji na ekranu nakon što student klikne Iskoristi kupon." />
         </div>

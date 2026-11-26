@@ -13,8 +13,8 @@ class CouponController extends Controller
     public function index(Request $request)
     {
         $coupons = Coupon::visibleTo($request->user('sanctum'))
-            ->with(['titular.locations', 'category'])
-            ->when($request->integer('category'), fn ($q, $categoryId) => $q->where('category_id', $categoryId))
+            ->with(['titular.locations', 'categories'])
+            ->when($request->integer('category'), fn ($q, $categoryId) => $q->whereRelation('categories', 'categories.id', $categoryId))
             ->orderBy('sort_order')
             ->orderBy('id')
             ->get();
@@ -52,7 +52,7 @@ class CouponController extends Controller
     private function findVisible(Request $request, int $id): Coupon
     {
         return Coupon::visibleTo($request->user('sanctum'))
-            ->with(['titular.locations', 'category'])
+            ->with(['titular.locations', 'categories'])
             ->findOrFail($id);
     }
 }

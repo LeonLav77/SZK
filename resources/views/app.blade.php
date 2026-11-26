@@ -13,11 +13,13 @@
 <body>
     <header class="bar">
         <div class="bar-in">
-            <a class="brand" href="#/">Studentska zlatna karta</a>
+            <a class="brand" href="#/" aria-label="Studentska zlatna karta, početna"><span class="brand-pre">Studentska </span><span>zlatna</span> <span>karta</span></a>
             <nav id="nav" aria-label="Glavna navigacija"></nav>
         </div>
     </header>
     <main id="app" class="page"></main>
+    {{-- Phone menu: fixed bottom bar (the header nav takes over from 720px up). --}}
+    <nav id="tabbar" class="tabbar" aria-label="Glavna navigacija"></nav>
 
     <script src="{{ asset('app.js') }}?v={{ filemtime(public_path('app.js')) }}"></script>
 </body>

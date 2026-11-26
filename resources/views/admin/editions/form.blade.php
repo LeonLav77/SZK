@@ -10,6 +10,7 @@
           action="{{ $edition->exists ? route('admin.editions.update', $edition) : route('admin.editions.store') }}">
         @csrf
         @if ($edition->exists) @method('PUT') @endif
+        <p class="required-note"><b>*</b> obavezno polje</p>
 
         <div class="card">
             <x-field name="name" label="Naziv izdanja" :value="$edition->name" required
@@ -42,20 +43,10 @@
         <div class="card">
             <h2 style="margin-top:0">Tiskano izdanje</h2>
             <div class="grid-2">
-                <div>
-                    @if ($edition->pdf_path)
-                        <p><a href="{{ Storage::disk('public')->url($edition->pdf_path) }}" target="_blank">Pogledaj trenutni PDF</a></p>
-                    @endif
-                    <x-field name="pdf" label="PDF" type="file" accept="application/pdf"
-                             help="Najviše 20 MB. Novi PDF zamijeni stari." />
-                </div>
-                <div>
-                    @if ($edition->cover_path)
-                        <img class="preview" src="{{ Storage::disk('public')->url($edition->cover_path) }}" alt="">
-                    @endif
-                    <x-field name="cover" label="Naslovnica (slika)" type="file" accept="image/*"
-                             help="Slika naslovnice za popis tiskanih izdanja." />
-                </div>
+                <x-upload name="pdf" label="PDF" kind="pdf" :current="$edition->pdf_path"
+                          help="Novi PDF zamijeni stari." />
+                <x-upload name="cover" label="Naslovnica (slika)" :current="$edition->cover_path"
+                          help="Slika naslovnice za popis tiskanih izdanja." />
             </div>
         </div>
 

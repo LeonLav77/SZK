@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Coupon;
 use App\Models\Edition;
 use App\Models\Titular;
+use App\Support\Uploads;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
@@ -24,7 +25,9 @@ class CouponController extends Controller
 
     public function store(Request $request, Edition $edition)
     {
-        $edition->coupons()->create($this->validated($request));
+        $data = $this->validated($request, new Coupon);
+        $coupon = $edition->coupons()->create(Arr::except($data, 'categories'));
+        $coupon->categories()->sync($data['categories']);
 
         return redirect()->route('admin.editions.show', $edition)->with('success', 'Kupon je dodan.');
     }
@@ -36,7 +39,9 @@ class CouponController extends Controller
 
     public function update(Request $request, Coupon $coupon)
     {
-        $coupon->update($this->validated($request));
+        $data = $this->validated($request, $coupon);
+        $coupon->update(Arr::except($data, 'categories'));
+        $coupon->categories()->sync($data['categories']);
 
         return redirect()->route('admin.editions.show', $coupon->edition_id)->with('success', 'Kupon je spremljen.');
     }
@@ -54,35 +59,36 @@ class CouponController extends Controller
             'edition' => $edition,
             'coupon' => $coupon,
             'titulars' => Titular::orderBy('name')->get(),
-            'categories' => Category::orderBy('sort_order')->orderBy('name')->get(),
+            'categories' => Category::orderBy('sort_order')->get(),
+            'checked' => collect(old('categories', $coupon->exists ? $coupon->categories->modelKeys() : []))->map(fn ($id) => (int) $id)->all(),
         ];
     }
 
-    private function validated(Request $request): array
+    private function validated(Request $request, Coupon $coupon): array
     {
         $data = $request->validate([
             'titular_id' => ['required', 'exists:titulars,id'],
-            'category_id' => ['nullable', 'exists:categories,id'],
+            'categories' => ['nullable', 'array'],
+            'categories.*' => ['integer', 'exists:categories,id'],
             'title' => ['required', 'string', 'max:255'],
             'discount' => ['nullable', 'string', 'max:50'],
             'description' => ['nullable', 'string'],
             'conditions' => ['nullable', 'string'],
             'code' => ['nullable', 'string', 'max:50'],
-            'link' => ['nullable', 'url', 'max:255'],
-            'valid_until' => ['nullable', 'date'],
-            'visual' => ['nullable', 'image', 'max:4096'],
+            // Mandatory, but an existing visual counts: editing only needs a file to replace it.
+            'visual' => [$coupon->visual_path ? 'nullable' : 'required', 'image', 'max:20480'],
             'sort_order' => ['nullable', 'integer'],
         ]);
 
-        $data['requires_login'] = $request->boolean('requires_login');
-        $data['is_published'] = $request->boolean('is_published');
+        // is_published / requires_login aren't in the form for phase 1: the DB defaults
+        // (published, visible to everyone) apply and existing values are left alone.
         $data['sort_order'] ??= 0;
+        $data['categories'] ??= [];
 
-        if ($request->hasFile('visual')) {
-            $data['visual_path'] = $request->file('visual')->store('visuals', 'public');
-        } elseif ($request->boolean('remove_visual')) {
-            $data['visual_path'] = null;
-        }
+        // Replace only, never remove: the visual is mandatory.
+        $data['visual_path'] = $request->hasFile('visual')
+            ? Uploads::store($request->file('visual'), 'visual', 'visuals')
+            : $coupon->visual_path;
 
         return Arr::except($data, ['visual']);
     }
